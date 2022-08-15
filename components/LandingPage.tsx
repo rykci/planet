@@ -3,14 +3,14 @@ import { signIn } from 'next-auth/react'
 
 function LandingPage() {
   return (
-    <div className="flex flex-col h-screen items-center bg-gray-100 pt-8 md:flex-row md:justify-around ">
+    <div className="flex flex-col h-screen items-center bg-gray-100 pt-8 md:flex-row md:justify-around lg:justify-evenly">
       <div className="flex flex-col items-center md:items-start md:pb-20">
         <img
           className="h-28 md:-ml-8 md:-mb-2"
           src="/logo.svg"
           placeholder="LOGO"
         />
-        <div className="leading-tight text-2xl text-center w-96 mb-10 md:text-left">
+        <div className="leading-tight text-2xl text-center w-96 mb-10 md:text-left lg:text-3xl lg:w-[26rem]">
           Connect with friends and the world around you on Facebook.
         </div>
       </div>
