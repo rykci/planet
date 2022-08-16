@@ -131,11 +131,12 @@ function LandingPage() {
         <div className="flex flex-col items-center md:items-start md:pb-20">
           <img
             className="h-28 md:-ml-8 md:-mb-2"
-            src="/logo.svg"
+            //src="/logo.svg"
+            src="/planet-rough-logo.png"
             placeholder="LOGO"
           />
-          <div className="leading-tight text-2xl text-center w-96 mb-10 md:text-left lg:text-3xl lg:w-[27rem]">
-            Connect with friends and the world around you on Facebook.
+          <div className="mt-5 leading-tight text-2xl text-center w-96 mb-10 lg:text-3xl lg:w-[27rem]">
+            Join your friends around the planet.
           </div>
         </div>
         <form
@@ -181,7 +182,7 @@ function LandingPage() {
           <button
             disabled={showModal || loading}
             type="submit"
-            className="bg-blue-500 border-blue-500 text-white w-full p-2 pl-4 pr-4 rounded-md border-2 enabled:hover:bg-blue-600 enabled:hover:border-blue-600 font-bold text-lg"
+            className="bg-planet-300 border-planet-300 text-white w-full p-2 pl-4 pr-4 rounded-md border-2 enabled:hover:bg-planet-400 enabled:hover:border-planet-400 font-bold text-lg"
           >
             Log In
           </button>
