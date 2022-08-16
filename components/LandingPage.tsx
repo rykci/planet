@@ -5,6 +5,58 @@ function LandingPage() {
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const [data, setData] = useState({
+    username: "",
+    password: "",
+    newUsername: "",
+    newPassword: "",
+    newPassword2: "",
+    logInError: "",
+    signUpError: "",
+    loading: false,
+  });
+
+  const {
+    username,
+    password,
+    newUsername,
+    newPassword,
+    newPassword2,
+    logInError,
+    signUpError,
+    loading,
+  } = data;
+
+  const EMPTY_FIELD_ERROR = "All fields are required";
+  const PASSWORD_MISMATCH_ERROR = "Passwords must match";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // verify login credentials
+    if (!username || !password) {
+      setData({ ...data, logInError: EMPTY_FIELD_ERROR });
+    }
+
+    console.log(data);
+  };
+
+  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!newUsername || !newPassword || !newPassword2) {
+      setData({ ...data, signUpError: EMPTY_FIELD_ERROR });
+    } else if (newPassword !== newPassword2) {
+      setData({ ...data, signUpError: PASSWORD_MISMATCH_ERROR });
+    } else {
+      setShowModal(false);
+    }
+  };
+
   return (
     <div>
       <div
@@ -22,18 +74,33 @@ function LandingPage() {
             Connect with friends and the world around you on Facebook.
           </div>
         </div>
-        <form className="flex flex-col rounded-md items-center justify-center gap-4 bg-white shadow-2xl p-5 w-96">
+        <form
+          onSubmit={handleLogIn}
+          className="flex flex-col rounded-md items-center justify-center gap-4 bg-white shadow-2xl p-5 w-96"
+        >
           <input
             disabled={showModal}
-            className="w-full border p-3 rounded-md"
+            className={`${
+              logInError && !username ? "border-red-500" : ""
+            } w-full border p-3 rounded-md`}
             placeholder="Username"
+            name="username"
+            value={username}
+            onChange={handleChange}
           />
-          <div className="focus-within:border-black focus-within:border-2 w-full flex justify-center items-center border rounded-md">
+          <div
+            className={`${
+              logInError && !password ? "border-red-500 " : ""
+            } border focus-within:border-black focus-within:border-2 w-full flex justify-center items-center rounded-md`}
+          >
             <input
               disabled={showModal}
               className="w-full focus:outline-none p-3"
               placeholder="Password"
               type={showPassword ? "text" : "password"}
+              name="password"
+              value={password}
+              onChange={handleChange}
             />
             <EyeOffIcon
               onClick={() => {
@@ -47,10 +114,7 @@ function LandingPage() {
 
           <button
             disabled={showModal}
-            onClick={(e) => {
-              e.preventDefault();
-              console.log(showModal);
-            }}
+            type="submit"
             className="bg-blue-500 border-blue-500 text-white w-full p-2 pl-4 pr-4 rounded-md border-2 enabled:hover:bg-blue-600 enabled:hover:border-blue-600 font-bold text-lg"
           >
             Log In
@@ -62,6 +126,7 @@ function LandingPage() {
             disabled={showModal}
             onClick={(e) => {
               e.preventDefault();
+              setData({ ...data, signUpError: "" });
               setShowModal(true);
             }}
             className="bg-green-500 border-green-500 p-3 pl-4 pr-4 rounded-lg border-2 enabled:hover:bg-green-600 enabled:hover:border-green-600 font-bold  text-white mb-3"
@@ -86,29 +151,49 @@ function LandingPage() {
 
         <div className="m-4 w-full border-t"></div>
 
-        <form className="flex flex-col p-5 pt-1 w-96 gap-4 justify-center align-middle">
+        <form
+          onSubmit={handleSignUp}
+          className="flex flex-col p-5 pt-1 w-96 gap-4 justify-center align-middle"
+        >
           <input
-            className="w-full border p-3 rounded-md"
+            className={`${
+              signUpError && !newUsername ? "border-red-500" : ""
+            } w-full border p-3 rounded-md`}
             placeholder="Username"
+            name="newUsername"
+            value={newUsername}
+            onChange={handleChange}
           />
           <input
-            className="w-full border p-3 rounded-md"
+            className={`${
+              signUpError == PASSWORD_MISMATCH_ERROR ||
+              (signUpError && !newPassword)
+                ? "border-red-500"
+                : ""
+            } w-full border p-3 rounded-md`}
             placeholder="Password"
             type="password"
+            name="newPassword"
+            value={newPassword}
+            onChange={handleChange}
           />
           <input
-            className="w-full border p-3 rounded-md"
+            className={`${
+              signUpError == PASSWORD_MISMATCH_ERROR ||
+              (signUpError && !newPassword2)
+                ? "border-red-500"
+                : ""
+            } w-full border p-3 rounded-md`}
             placeholder="Confirm Your Password"
             type="password"
+            name="newPassword2"
+            value={newPassword2}
+            onChange={handleChange}
           />
 
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setShowModal(false);
-            }}
-            className="bg-green-500 border-green-500 rounded-lg  hover:bg-green-600 hover:border-green-600 font-bold p-2 mx-auto w-1/2  text-white my-3"
-          >
+          <p className="text-center w-full">{signUpError ? signUpError : ""}</p>
+
+          <button className="bg-green-500 border-green-500 rounded-lg  hover:bg-green-600 hover:border-green-600 font-bold p-2 mx-auto w-1/2  text-white my-3">
             Sign Up
           </button>
         </form>
