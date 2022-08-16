@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 //import { UserCircleIcon, GlobeIcon } from '@heroicons/react/solid'
 import { UserCircleIcon, GlobeIcon } from '@heroicons/react/outline'
-import { useSession } from 'next-auth/react'
+import { AuthContext } from '../context/auth'
 
 function Header() {
-  const { data: session } = useSession()
+  const { user } = useContext(AuthContext)
   return (
     <div className="flex items-center justify-between p-4 border-b-2">
       <img
-        src={session?.user?.image || undefined}
+        src={undefined}
         className="w-10 h-10 hover:cursor-pointer font-light rounded-full"
       />
 

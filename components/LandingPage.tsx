@@ -1,20 +1,26 @@
-import React, { useState } from "react";
-import { EyeIcon, EyeOffIcon, XIcon } from "@heroicons/react/solid";
+import React, { useState } from 'react'
+import { EyeOffIcon, XIcon } from '@heroicons/react/solid'
+import { auth, db } from '../firebase/firebase'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth'
+import { doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore'
 
 function LandingPage() {
-  const [showModal, setShowModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showModal, setShowModal] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const [data, setData] = useState({
-    username: "",
-    password: "",
-    newUsername: "",
-    newPassword: "",
-    newPassword2: "",
-    logInError: "",
-    signUpError: "",
+    username: '',
+    password: '',
+    newUsername: '',
+    newPassword: '',
+    newPassword2: '',
+    logInError: '',
+    signUpError: '',
     loading: false,
-  });
+  })
 
   const {
     username,
@@ -25,43 +31,101 @@ function LandingPage() {
     logInError,
     signUpError,
     loading,
-  } = data;
+  } = data
 
-  const EMPTY_FIELD_ERROR = "All fields are required";
-  const PASSWORD_MISMATCH_ERROR = "Passwords must match";
+  const EMPTY_FIELD_ERROR = 'All fields are required'
+  const PASSWORD_MISMATCH_ERROR = 'Passwords must match'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
+    setData({ ...data, [e.target.name]: e.target.value })
+  }
 
-  const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setData({ ...data, logInError: '', loading: true })
 
     // verify login credentials
     if (!username || !password) {
-      setData({ ...data, logInError: EMPTY_FIELD_ERROR });
+      setData({ ...data, logInError: EMPTY_FIELD_ERROR })
     }
 
-    console.log(data);
-  };
+    try {
+      const result = await signInWithEmailAndPassword(
+        auth,
+        `${username}@planet.io`,
+        password,
+      )
+      console.log(result)
+      await updateDoc(doc(db, 'users', result.user.uid), {
+        isOnline: true,
+      })
+      setData({
+        username: '',
+        password: '',
+        newUsername: '',
+        newPassword: '',
+        newPassword2: '',
+        logInError: '',
+        signUpError: '',
+        loading: false,
+      })
+    } catch (err) {
+      setData({
+        ...data,
+        logInError: err instanceof Error ? err.message : 'Unexpected error',
+        loading: false,
+      })
+    }
+  }
 
-  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setData({ ...data, signUpError: '', loading: true })
 
     if (!newUsername || !newPassword || !newPassword2) {
-      setData({ ...data, signUpError: EMPTY_FIELD_ERROR });
+      setData({ ...data, signUpError: EMPTY_FIELD_ERROR })
     } else if (newPassword !== newPassword2) {
-      setData({ ...data, signUpError: PASSWORD_MISMATCH_ERROR });
+      setData({ ...data, signUpError: PASSWORD_MISMATCH_ERROR })
     } else {
-      setShowModal(false);
+      try {
+        const result = await createUserWithEmailAndPassword(
+          auth,
+          `${newUsername}@planet.io`,
+          newPassword,
+        )
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          username: newUsername,
+          createdAt: Timestamp.fromDate(new Date()),
+          isOnline: true,
+        })
+        setData({
+          username: '',
+          password: '',
+          newUsername: '',
+          newPassword: '',
+          newPassword2: '',
+          logInError: '',
+          signUpError: '',
+          loading: false,
+        })
+        setShowModal(false)
+      } catch (err) {
+        setData({
+          ...data,
+          signUpError: err instanceof Error ? err.message : 'Unexpected error',
+          loading: false,
+        })
+      }
+      //setShowModal(false)
     }
-  };
+  }
 
   return (
     <div>
       <div
         className={`${
-          showModal ? "opacity-20" : ""
+          showModal ? 'opacity-20' : ''
         } flex flex-col h-screen items-center bg-gray-100 pt-8 md:flex-row md:justify-around lg:justify-evenly`}
       >
         <div className="flex flex-col items-center md:items-start md:pb-20">
@@ -79,9 +143,9 @@ function LandingPage() {
           className="flex flex-col rounded-md items-center justify-center gap-4 bg-white shadow-2xl p-5 w-96"
         >
           <input
-            disabled={showModal}
+            disabled={showModal || loading}
             className={`${
-              logInError && !username ? "border-red-500" : ""
+              logInError && !username ? 'border-red-500' : ''
             } w-full border p-3 rounded-md`}
             placeholder="Username"
             name="username"
@@ -90,30 +154,32 @@ function LandingPage() {
           />
           <div
             className={`${
-              logInError && !password ? "border-red-500 " : ""
+              logInError && !password ? 'border-red-500 ' : ''
             } border focus-within:border-black focus-within:border-2 w-full flex justify-center items-center rounded-md`}
           >
             <input
-              disabled={showModal}
+              disabled={showModal || loading}
               className="w-full focus:outline-none p-3"
               placeholder="Password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               name="password"
               value={password}
               onChange={handleChange}
             />
             <EyeOffIcon
               onClick={() => {
-                if (!showModal) setShowPassword(!showPassword);
+                if (!showModal) setShowPassword(!showPassword)
               }}
               className={`${
-                showModal ? "" : "cursor-pointer"
+                showModal ? '' : 'cursor-pointer'
               } h-6 pr-3  stroke-2 text-gray-400 `}
             />
           </div>
 
+          <p className="text-center w-full">{logInError ? logInError : ''}</p>
+
           <button
-            disabled={showModal}
+            disabled={showModal || loading}
             type="submit"
             className="bg-blue-500 border-blue-500 text-white w-full p-2 pl-4 pr-4 rounded-md border-2 enabled:hover:bg-blue-600 enabled:hover:border-blue-600 font-bold text-lg"
           >
@@ -123,11 +189,11 @@ function LandingPage() {
           <div className="m-4 w-full border-t"></div>
 
           <button
-            disabled={showModal}
+            disabled={showModal || loading}
             onClick={(e) => {
-              e.preventDefault();
-              setData({ ...data, signUpError: "" });
-              setShowModal(true);
+              e.preventDefault()
+              setData({ ...data, signUpError: '' })
+              setShowModal(true)
             }}
             className="bg-green-500 border-green-500 p-3 pl-4 pr-4 rounded-lg border-2 enabled:hover:bg-green-600 enabled:hover:border-green-600 font-bold  text-white mb-3"
           >
@@ -137,7 +203,7 @@ function LandingPage() {
       </div>
       <div
         className={`${
-          showModal ? "" : "hidden"
+          showModal ? '' : 'hidden'
         } absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col rounded-md items-center justify-center  bg-white shadow-2xl`}
       >
         <div className="self-start space-y-1 p-5 pb-0 pt-3 relative w-full">
@@ -156,8 +222,9 @@ function LandingPage() {
           className="flex flex-col p-5 pt-1 w-96 gap-4 justify-center align-middle"
         >
           <input
+            disabled={loading}
             className={`${
-              signUpError && !newUsername ? "border-red-500" : ""
+              signUpError && !newUsername ? 'border-red-500' : ''
             } w-full border p-3 rounded-md`}
             placeholder="Username"
             name="newUsername"
@@ -165,11 +232,12 @@ function LandingPage() {
             onChange={handleChange}
           />
           <input
+            disabled={loading}
             className={`${
               signUpError == PASSWORD_MISMATCH_ERROR ||
               (signUpError && !newPassword)
-                ? "border-red-500"
-                : ""
+                ? 'border-red-500'
+                : ''
             } w-full border p-3 rounded-md`}
             placeholder="Password"
             type="password"
@@ -178,11 +246,12 @@ function LandingPage() {
             onChange={handleChange}
           />
           <input
+            disabled={loading}
             className={`${
               signUpError == PASSWORD_MISMATCH_ERROR ||
               (signUpError && !newPassword2)
-                ? "border-red-500"
-                : ""
+                ? 'border-red-500'
+                : ''
             } w-full border p-3 rounded-md`}
             placeholder="Confirm Your Password"
             type="password"
@@ -191,15 +260,18 @@ function LandingPage() {
             onChange={handleChange}
           />
 
-          <p className="text-center w-full">{signUpError ? signUpError : ""}</p>
+          <p className="text-center w-full">{signUpError ? signUpError : ''}</p>
 
-          <button className="bg-green-500 border-green-500 rounded-lg  hover:bg-green-600 hover:border-green-600 font-bold p-2 mx-auto w-1/2  text-white my-3">
+          <button
+            disabled={loading}
+            className="bg-green-500 border-green-500 rounded-lg  hover:bg-green-600 hover:border-green-600 font-bold p-2 mx-auto w-1/2  text-white mb-3"
+          >
             Sign Up
           </button>
         </form>
       </div>
     </div>
-  );
+  )
 }
 
-export default LandingPage;
+export default LandingPage
