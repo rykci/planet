@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 
 import Footer from '../components/Footer'
 import Header from '../components/Header'
@@ -10,9 +10,23 @@ import { AuthContext } from '../context/auth'
 
 function Planets() {
   const { user } = useContext(AuthContext)
+  const [addingPlanet, setAddingPlanet] = useState(false)
   return (
     <main className="flex flex-col space-between max-h-screen h-screen bg-gray-100">
-      <Header />
+      <Header plusAction={() => setAddingPlanet(!addingPlanet)} />
+      {addingPlanet ? (
+        <form className="flex">
+          <input
+            className="p-3 border-2 border-y-0 flex-grow-1 w-full"
+            placeholder="Planet Name"
+          />
+          <button className="bg-blue-500 hover:border-blue-600 hover:bg-blue-600 border-blue-500 text-white p-3 px-6 self-end">
+            Create
+          </button>
+        </form>
+      ) : (
+        <></>
+      )}
       <button
         className="p-2 border"
         onClick={async () => {

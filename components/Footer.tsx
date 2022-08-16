@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-  CalendarIcon,
-  UserGroupIcon,
-  GlobeIcon,
-} from '@heroicons/react/outline'
+import { CalendarIcon, UserGroupIcon, GlobeIcon } from '@heroicons/react/solid'
 
 function Footer() {
   return (
