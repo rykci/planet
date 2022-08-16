@@ -1,15 +1,15 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
-import LoginBtn from '../components/LoginBtn'
+import type { NextPage } from "next";
+import Head from "next/head";
+import Image from "next/image";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import LoginBtn from "../components/LoginBtn";
 
-import { useSession } from 'next-auth/react'
-import LandingPage from '../components/LandingPage'
+import { useSession } from "next-auth/react";
+import LandingPage from "../components/LandingPage";
 
 const Home: NextPage = () => {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   return (
     <div className="max-h-screen">
@@ -31,7 +31,7 @@ const Home: NextPage = () => {
         </main>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
