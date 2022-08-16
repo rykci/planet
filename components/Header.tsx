@@ -1,10 +1,8 @@
 import React, { useContext } from 'react'
 //import { UserCircleIcon, GlobeIcon } from '@heroicons/react/solid'
 import { UserCircleIcon, GlobeIcon } from '@heroicons/react/outline'
-import { AuthContext } from '../context/auth'
 
 function Header() {
-  const { user } = useContext(AuthContext)
   return (
     <div className="flex items-center justify-between p-4 border-b-2">
       <img
