@@ -1,27 +1,55 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 import Footer from '../components/Footer'
 import Header from '../components/Header'
+import planetMap from '../planetMap'
 
 import { auth, db } from '../firebase/firebase'
-import { signOut } from 'firebase/auth'
-import { collection, doc, updateDoc, addDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  setDoc,
+  query,
+  where,
+  onSnapshot,
+} from 'firebase/firestore'
 import { AuthContext } from '../context/auth'
 
 function Planets() {
+  const router = useRouter()
   const { user } = useContext(AuthContext)
+  const [planetList, setPlanetList] = useState(Array())
   const [addingPlanet, setAddingPlanet] = useState(false)
   const [planetName, setPlanetName] = useState('')
+
+  const planetRef = collection(db, 'planets')
+
+  useEffect(() => {
+    const q = query(planetRef, where('members', 'array-contains', user.uid))
+
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      let usersPlanets = Array()
+      querySnapshot.forEach((planet) => {
+        usersPlanets.push(planet.data())
+      })
+      setPlanetList(usersPlanets)
+    })
+    return () => unsub()
+  }, [])
 
   const createPlanet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const result = await addDoc(collection(db, 'planets'), {
-        planetName,
+      const newPlanetRef = doc(planetRef)
+      setDoc(newPlanetRef, {
+        name: planetName,
+        id: newPlanetRef.id,
         members: [user.uid],
+        type: Math.floor(Math.random() * planetMap.length),
       })
 
-      //console.log(result.id)
+      router.push(`planet/${newPlanetRef.id}`)
     } catch (err) {
       console.log(err)
     }
@@ -49,20 +77,22 @@ function Planets() {
       ) : (
         <></>
       )}
-      <button
-        className="p-2 border"
-        onClick={async () => {
-          await updateDoc(doc(db, 'users', auth.currentUser!.uid), {
-            isOnline: false,
-          })
-          await signOut(auth)
-        }}
-      >
-        SIGN OUT
-      </button>
-      <button className="p-2 border" onClick={() => console.log(user)}>
-        PRINT USER
-      </button>
+
+      <div className="overflow-y-scroll ">
+        {planetList.map((planet) => (
+          <div
+            onClick={() => router.push(`planet/${planet.id}`)}
+            key={planet.id}
+            className="border-b py-4 flex items-center hover:bg-gray-200 cursor-pointer"
+          >
+            <img
+              className="px-6"
+              src={`/planet-icons/${planetMap[planet.type]}`}
+            />
+            <div className="text-xl">{planet.name}</div>
+          </div>
+        ))}
+      </div>
       <Footer />
     </main>
   )

@@ -135,7 +135,7 @@ function LandingPage() {
             src="/planet-rough-logo.png"
             placeholder="LOGO"
           />
-          <div className="mt-5 leading-tight text-2xl text-center w-96 mb-10 lg:text-3xl lg:w-[27rem]">
+          <div className="mt-6 leading-tight text-2xl text-center w-96 mb-10 lg:text-3xl lg:w-[27rem]">
             Join your friends around the planet.
           </div>
         </div>

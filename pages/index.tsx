@@ -12,8 +12,8 @@ const Home: NextPage = () => {
   return (
     <div className="max-h-screen">
       <Head>
-        <title>Planet!</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Planet</title>
+        <link rel="icon" href="/logo.png" />
       </Head>
 
       {!user ? <LandingPage /> : <Planets />}
