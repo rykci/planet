@@ -59,43 +59,47 @@ function Planets() {
     setPlanetName(e.target.value)
   }
 
-  return (
-    <main className="flex flex-col space-between max-h-screen h-screen bg-gray-100">
-      <Header plusAction={() => setAddingPlanet(!addingPlanet)} />
-      {addingPlanet ? (
-        <form className="flex" onSubmit={createPlanet}>
-          <input
-            className="p-3 border-2 border-y-0 flex-grow-1 w-full"
-            placeholder="Planet Name"
-            onChange={handleChange}
-            value={planetName}
-          />
-          <button className="bg-blue-500 hover:border-blue-600 hover:bg-blue-600 border-blue-500 text-white p-3 px-6 self-end">
-            Create
-          </button>
-        </form>
-      ) : (
-        <></>
-      )}
-
-      <div className="overflow-y-scroll flex-1 ">
-        {planetList.map((planet) => (
-          <div
-            onClick={() => router.push(`planet/${planet.id}`)}
-            key={planet.id}
-            className="border-b py-4 flex items-center hover:bg-gray-200 cursor-pointer"
-          >
-            <img
-              className="px-6"
-              src={`/planet-icons/${planetMap[planet.type]}`}
+  if (!user) {
+    router.push('/')
+    return <></>
+  } else
+    return (
+      <main className="flex flex-col space-between max-h-screen h-screen bg-gray-100">
+        <Header plusAction={() => setAddingPlanet(!addingPlanet)} />
+        {addingPlanet ? (
+          <form className="flex" onSubmit={createPlanet}>
+            <input
+              className="p-3 border-2 border-y-0 flex-grow-1 w-full"
+              placeholder="Planet Name"
+              onChange={handleChange}
+              value={planetName}
             />
-            <div className="text-xl">{planet.name}</div>
-          </div>
-        ))}
-      </div>
-      <Footer />
-    </main>
-  )
+            <button className="bg-blue-500 hover:border-blue-600 hover:bg-blue-600 border-blue-500 text-white p-3 px-6 self-end">
+              Create
+            </button>
+          </form>
+        ) : (
+          <></>
+        )}
+
+        <div className="overflow-y-scroll flex-1 ">
+          {planetList.map((planet) => (
+            <div
+              onClick={() => router.push(`planet/${planet.id}`)}
+              key={planet.id}
+              className="border-b py-4 flex items-center hover:bg-gray-200 cursor-pointer"
+            >
+              <img
+                className="px-6"
+                src={`/planet-icons/${planetMap[planet.type]}`}
+              />
+              <div className="text-xl">{planet.name}</div>
+            </div>
+          ))}
+        </div>
+        <Footer />
+      </main>
+    )
 }
 
 export default Planets
