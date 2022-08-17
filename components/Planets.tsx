@@ -78,7 +78,7 @@ function Planets() {
         <></>
       )}
 
-      <div className="overflow-y-scroll ">
+      <div className="overflow-y-scroll flex-1 ">
         {planetList.map((planet) => (
           <div
             onClick={() => router.push(`planet/${planet.id}`)}

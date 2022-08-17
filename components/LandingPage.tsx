@@ -55,7 +55,6 @@ function LandingPage() {
         `${username}@planet.io`,
         password,
       )
-      console.log(result)
       await updateDoc(doc(db, 'users', result.user.uid), {
         isOnline: true,
       })
