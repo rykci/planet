@@ -13,8 +13,14 @@ import {
   query,
   where,
   onSnapshot,
+  orderBy,
+  Timestamp,
 } from 'firebase/firestore'
 import { AuthContext } from '../context/auth'
+
+interface PlanetObject {
+  lastUpdate: Date
+}
 
 function Planets() {
   const router = useRouter()
@@ -33,10 +39,14 @@ function Planets() {
       querySnapshot.forEach((planet) => {
         usersPlanets.push(planet.data())
       })
-      setPlanetList(usersPlanets)
+      setPlanetList(sortByDate(usersPlanets))
     })
     return () => unsub()
   }, [])
+
+  const sortByDate = (list: Array<PlanetObject>) => {
+    return list.sort((a, b) => (b.lastUpdate > a.lastUpdate ? 1 : -1))
+  }
 
   const createPlanet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -47,6 +57,8 @@ function Planets() {
         id: newPlanetRef.id,
         members: [user.uid],
         type: Math.floor(Math.random() * planetMap.length),
+        chat: Array(),
+        lastUpdate: Timestamp.fromDate(new Date()),
       })
 
       router.push(`planet/${newPlanetRef.id}`)
