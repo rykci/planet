@@ -140,7 +140,7 @@ function LandingPage() {
         </div>
         <form
           onSubmit={handleLogIn}
-          className="flex flex-col rounded-md items-center justify-center gap-4 bg-white shadow-2xl p-5 w-96"
+          className="flex flex-col rounded-md items-center justify-center gap-4 bg-white shadow-2xl p-5 w-96 md:mb-10"
         >
           <input
             disabled={showModal || loading}
