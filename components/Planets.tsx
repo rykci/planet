@@ -68,7 +68,9 @@ function Planets() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlanetName(e.target.value)
+    if (planetName.length < 30) {
+      setPlanetName(e.target.value)
+    }
   }
 
   if (!user) {
@@ -102,7 +104,7 @@ function Planets() {
               className="border-b py-4 flex items-center hover:bg-gray-200 cursor-pointer"
             >
               <img
-                className="px-6"
+                className="px-6 drop-shadow-2xl"
                 src={`/planet-icons/${planetMap[planet.type]}`}
               />
               <div className="text-xl">{planet.name}</div>

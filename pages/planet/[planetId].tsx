@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { ChevronLeftIcon } from '@heroicons/react/outline'
-import { PlusCircleIcon } from '@heroicons/react/solid'
+import { PlusCircleIcon, MenuIcon } from '@heroicons/react/solid'
 import { db } from '../../firebase/firebase'
 import { doc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore'
 
@@ -83,9 +83,9 @@ function PlanetRoom() {
     setUserInput(e.target.value)
   }
 
+  if (!user) return <WrongPlanet />
   if (loading) return <Loading />
-  if (!user || !planet || !planet.members?.includes(user.uid))
-    return <WrongPlanet />
+  if (!planet || !planet.members?.includes(user.uid)) return <WrongPlanet />
 
   return (
     <div className="bg-gray-100 h-screen flex flex-col justify-between">
@@ -96,7 +96,7 @@ function PlanetRoom() {
         />
         <img className="" src={`/planet-icons/${planetMap[planet?.type]}`} />
         <div className="font-semibold text-lg px-6"> {planet?.name} </div>
-        <PlusCircleIcon
+        <MenuIcon
           onClick={() => setAddingUser(!addingUser)}
           className="h-12 absolute right-3 cursor-pointer"
         />
